@@ -83,7 +83,7 @@ if page == "📊 Dashboard":
     with col3:
         st.markdown('<div class="trading-card"><div class="metric-title">Scanner Hub</div><div class="metric-val">CCXT Connected</div></div>', unsafe_allow_html=True)
     with col4:
-        st.markdown('<div class="trading-card"><div class="metric-title">Installed Packages</div><div class="metric-val">Numba, CCXT Loaded</div></div>', unsafe_allowed_html=True)
+        st.markdown('<div class="trading-card"><div class="metric-title">Installed Packages</div><div class="metric-val">Numba, CCXT Loaded</div></div>', unsafe_allow_html=True)
         
     st.markdown("### 📈 Live Signal Signals & Charting Window (नियम ९)")
     chart_data = pd.DataFrame({"Smart Money Signals": [12, 19, 8, 27, 15, 22, 30]})
@@ -94,7 +94,7 @@ if page == "📊 Dashboard":
     st.markdown(f'<div class="log-stream">{log_content}</div>', unsafe_allow_html=True)
 
 # ==========================================
-# PAGE 2: MOBILE CODE EDITOR (नियम २, ४, ५, ६, VII, ११, १२, १३)
+# PAGE 2: MOBILE CODE EDITOR (नियम २, ४, ५, ६, ७, ११, १२, १३)
 # ==========================================
 elif page == "📝 Mobile Code Editor":
     st.title("📝 Mobile-Friendly Advanced Editor")
