@@ -11,6 +11,7 @@ import re
 import time
 import uuid
 import requests
+import sys
 from datetime import datetime
 
 # ==========================================
@@ -129,7 +130,9 @@ elif page == "📝 Mobile Code Editor":
             try:
                 with open("temp_script.py", "w", encoding="utf-8") as f:
                     f.write(sanitized_code)
-                result = subprocess.run(["python", "temp_script.py"], capture_output=True, text=True, timeout=15)
+                
+                # सुधारित रनर लेयर - sys.executable मुळे ccxt चा एन्व्हायर्नमेंट पाथ अचूक कनेक्ट होईल
+                result = subprocess.run([sys.executable, "temp_script.py"], capture_output=True, text=True, timeout=15)
                 
                 timestamp = datetime.now().strftime("%H:%M:%S")
                 if result.stdout:
