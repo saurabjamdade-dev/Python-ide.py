@@ -1,6 +1,0 @@
-streamlit
-pandas
-requests
-ccxt
-numba
-numpy
