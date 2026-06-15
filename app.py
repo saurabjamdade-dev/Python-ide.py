@@ -16,7 +16,7 @@ from datetime import datetime
 # 1. Page Configuration (नियम १ आणि १५)
 st.set_page_config(page_title="Professional Trading IDE", layout="wide", initial_sidebar_state="expanded")
 
-# डार्क मोड आणि डॅशबोर्ड निऑन डिझाईन (नियम १४) - सर्व सिंटॅक्स एरर्स फिक्स केल्या आहेत
+# डार्क मोड आणि डॅशबोर्ड निऑन डिझाईन (नियम १४) - unsafe_allow_html ची एरर पूर्ण फिक्स केली आहे
 st.markdown("""
 <style>
     .main { background-color: #0d1117; color: #c9d1d9; }
@@ -50,18 +50,17 @@ if page == "📊 Dashboard":
     
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.markdown('<div class="trading-card">🚀 Live Consoles<br><span class="metric-val">2 Active</span></div>', unsafe_allowed_html=True)
+        st.markdown('<div class="trading-card">🚀 Live Consoles<br><span class="metric-val">2 Active</span></div>', unsafe_allow_html=True)
     with col2:
-        st.markdown(f'<div class="trading-card">⏳ Background Tasks<br><span class="metric-val">{len(st.session_state.bg_tasks)} Running</span></div>', unsafe_allowed_html=True)
+        st.markdown(f'<div class="trading-card">⏳ Background Tasks<br><span class="metric-val">{len(st.session_state.bg_tasks)} Running</span></div>', unsafe_allow_html=True)
     with col3:
-        st.markdown('<div class="trading-card">🛠️ Scanner Hub<br><span class="metric-val">12 Active Scanners</span></div>', unsafe_allowed_html=True)
+        st.markdown('<div class="trading-card">🛠️ Scanner Hub<br><span class="metric-val">12 Active Scanners</span></div>', unsafe_allow_html=True)
     with col4:
-        st.markdown('<div class="trading-card">📦 Installed Packages<br><span class="metric-val">numba, ccxt loaded</span></div>', unsafe_allowed_html=True)
+        st.markdown('<div class="trading-card">📦 Installed Packages<br><span class="metric-val">numba, ccxt loaded</span></div>', unsafe_allow_html=True)
         
     st.markdown("### 📈 Execution History & Real-Time Log Streaming")
-    st.info("बॅकग्राउंडला २४ तास सुरू असणाऱ्या स्क्रिप्टचे सिग्नल्स थेट टेलिग्राम आणि खालील चार्ट विंडोवर दिसतील.")
+    st.info("बॅकग्राउंडला २४ तास सुरू असणाऱ्या स्क्रिप्टचे सिग्नल्स थेट टेलिग्राम आणि खालील CHART विंडोवर दिसतील.")
     
-    # Charting and Visualization Window (नियम ९)
     chart_data = pd.DataFrame({"Signals": [10, 15, 8, 22, 14, 18, 25]})
     st.line_chart(chart_data)
 
@@ -107,7 +106,7 @@ elif page == "📝 Mobile Code Editor":
                 
     with tab2:
         st.markdown("### ⏳ Persistent Background Execution (नियम ८)")
-        task_name = st.text_input("या बॅकग्राउंड टास्कला नाव द्या:", value="Crypto_Whale_Scanner")
+        task_name = st.text_input("या बॅकग्राउंड TASK ला नाव द्या:", value="Crypto_Whale_Scanner")
         
         if st.button("🚀 Send to Background (24/7 Continuous Execution)"):
             task_id = str(uuid.uuid4())[:8]
