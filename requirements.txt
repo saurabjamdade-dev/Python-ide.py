@@ -1,6 +1,6 @@
 streamlit
-pandas
-requests
 ccxt
 numba
+pandas
+requests
 numpy
