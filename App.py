@@ -24,7 +24,7 @@ st.markdown("""
     .trading-card { background-color: #161b22; padding: 20px; border-radius: 10px; border: 1px solid #30363d; margin-bottom: 15px; text-align: center; }
     .metric-val { font-size: 24px; font-weight: bold; color: #58a6ff; }
 </style>
-""", unsafe_allowed_html=True)
+""", unsafe_allow_html=True)
 
 # 2. Session State Initialization (नियम ८, १०, १३)
 if 'bg_tasks' not in st.session_state:
