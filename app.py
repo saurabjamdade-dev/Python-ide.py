@@ -6,18 +6,16 @@ import sys
 import json
 import re
 import time
-import requests
-import threading
 
 # ==========================================
-# भाग १: कॉन्फिगरेशन आणि Pydroid डार्क थीम (घटक १, २, ३, ४)
+# भाग १: कॉन्फिगरेशन आणि Pydroid डार्क थीम
 # ==========================================
 st.set_page_config(page_title="Pydroid 3 Ultimate IDE", layout="wide")
 
 LOG_FILE = "bot_output.log"
 VAULT_FILE = "secure_vault.json"
 
-# Pydroid 3 चा हुबेहूब लुक देणारा प्रगत CSS लेयर (घटक ५, २२)
+# Pydroid 3 चा हुबेहूब लुक देणारा प्रगत CSS लेयर (टर्मिनल आणि थीम)
 st.markdown("""
     <style>
     .terminal-box {
@@ -36,13 +34,13 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# भाग २: सुरक्षितता आणि सिंटॅक्स क्लीनर लेयर (घटक ९, १०, १९)
+# भाग २: सुरक्षितता आणि सिंटॅक्स क्लीनर लेयर
 # ==========================================
 def sanitize_and_clean_code(raw_code: str) -> str:
     """मोबाईल क्युपॅडमुळे येणारे चुकीचे सिंटॅक्स आणि कोट्स क्लीन करणे"""
     clean = raw_code.replace("\r\n", "\n")
     # स्मार्ट कोट्सचे सामान्य कोट्समध्ये रूपांतर
-    clean = re.sub(r'[“”]', '"', clean)
+    clean = re.sub(r'[雪”]', '"', clean)
     clean = re.sub(r'[‘’]', "'", clean)
     return clean
 
@@ -56,10 +54,10 @@ def inject_security_credentials(env_dict):
                 env_dict["BROKER_TOTP_SECRET"] = vault_data.get("totp_secret", "")
         except Exception:
             pass
-    return env_dict
+    return env_dictSuffix_ = ""
 
 # ==========================================
-# भाग ३: बॅकएंड प्रोसेस मॅनेजमेंट (घटक २१, २३)
+# भाग ३: बॅकएंड प्रोसेस मॅनेजमेंट
 # ==========================================
 def run_script_in_background(code_content):
     """२४/७ बॅकग्राउंड डेमन प्रोसेस सुरू करणे (No Timeout)"""
@@ -86,15 +84,15 @@ def stop_background_script():
         subprocess.run(["pkill", "-f", "running_script.py"])
 
 # ==========================================
-# भाग ४: Pydroid UI घटकांचे नेव्हिगेशन (घटक ६)
+# भाग ४: Pydroid UI घटकांचे नेव्हिगेशन
 # ==========================================
 st.sidebar.title("📂 Pydroid 3 मेनू")
 choice = st.sidebar.radio(
     "पर्याय निवडा:", 
-    ["📝 कोड एडिटर (IDE)", "📦 पिप मॅनेजर (Pip)", "🔐 सुरक्षित व्हॉल्ट (Vault)", "📊 लाइव्ह मार्केट ट्रॅकर"]
+    ["📝 कोड एडिटर (IDE)", "📦 पिप मॅनेजर (Pip)", "🔐 सुरक्षित व्हॉल्ट (Vault)", "📊 लाइव्ह Market ट्रॅकर"]
 )
 
-# --- १. मुख्य कोड एडिटर विंडो (घटक १२, १३, १४, १५, २१) ---
+# --- १. मुख्य कोड एडिटर विंडो ---
 if choice == "📝 कोड एडिटर (IDE)":
     st.title("🚀 Python Algo Trading IDE")
     st.caption("NSE/BSE शेअर बाजार, क्रिप्टो आणि फॉरेक्ससाठी २४/७ कोडिंग प्लॅटफॉर्म.")
@@ -121,7 +119,7 @@ if choice == "📝 कोड एडिटर (IDE)":
         auto_update=False
     )
 
-    # अॅक्शन बटन्स (रन आणि स्टॉप)
+    # ॲक्शन बटन्स (रन आणि स्टॉप)
     col1, col2 = st.columns([2, 5])
     with col1:
         if st.button("▶️ RUN CODE (24/7 Mode)", type="primary"):
@@ -136,7 +134,7 @@ if choice == "📝 कोड एडिटर (IDE)":
             time.sleep(1)
             st.rerun()
 
-    # रिड-ओन्ली लाइव्ह टर्मिनल विंडो (घटक २२)
+    # रिड-ओन्ली लाइव्ह टर्मिनल विंडो
     st.subheader("🖥️ टर्मिनल आऊटपुट (Read-Only Terminal)")
     if os.path.exists(LOG_FILE):
         with open(LOG_FILE, "r") as f:
@@ -148,7 +146,7 @@ if choice == "📝 कोड एडिटर (IDE)":
     if st.button("🔄 टर्मिनल रिफ्रेश करा"):
         st.rerun()
 
-# --- २. पिप पॅकेज मॅनेजर (घटक ७, ८) ---
+# --- २. पिप पॅकेज मॅनेजर ---
 elif choice == "📦 पिप मॅनेजर (Pip)":
     st.title("📦 Pip Package Manager")
     st.write("तुमच्या अल्गो बोटाला लागणाऱ्या लायब्ररीज (उदा. yfinance, ccxt, ta) येथून थेट इन्स्टॉल करा.")
@@ -162,7 +160,7 @@ elif choice == "📦 पिप मॅनेजर (Pip)":
         else:
             st.error("कृपया वैध लायब्ररीचे नाव टाका.")
 
-# --- ३. सुरक्षित एपीआय व्हॉल्ट (घटक १०, २५) ---
+# --- ३. सुरक्षित एपीआय व्हॉल्ट ---
 elif choice == "🔐 सुरक्षित व्हॉल्ट (Vault)":
     st.title("🔐 Secure API Key Vault")
     st.write("तुमचे सिक्रेट पासवर्ड्स, ब्रोकर्सच्या API की आणि TOTP क्रेडेंशियल्स येथे सुरक्षित सेव्ह करा.")
@@ -177,17 +175,18 @@ elif choice == "🔐 सुरक्षित व्हॉल्ट (Vault)":
                 saved_totp = data.get("totp_secret", "")
         except: pass
 
+    # दुरुस्त केलेल्या ओळी (ओळ क्र. १२४ आणि १२५ चे अचूक रूप)
     api_key_input = st.text_input("Exchange / Broker API Key:", value=saved_api, type="password")
-    totp_input = St.text_input("TOTP Google Authenticator Secret (2FA):", value=saved_totp, type="password")
+    totp_input = st.text_input("TOTP Google Authenticator Secret (2FA):", value=saved_totp, type="password")
     
     if st.button("🔒 Save Credentials Securely"):
         vault_payload = {"api_key": api_key_input, "totp_secret": totp_input}
         with open(VAULT_FILE, "w") as f:
             json.dump(vault_payload, f)
-        st.success("क्रेडेंशियल्स कूटबद्ध (Encrypt) करून सेव्ह केले गेले आहेत आणि कोड रन करताना ते ऑटो-इन्जेक्ट होतील!")
+        st.success("क्रेडेंशियल्स सेव्ह केले गेले आहेत आणि कोड रन करताना ते ऑटो-इन्जेक्ट होतील!")
 
-# --- ४. लाइव्ह मार्केट ट्रॅकर (अतिरिक्त उपयुक्त घटक) ---
-elif choice == "📊 लाइव्ह मार्केट ट्रॅकर":
+# --- ४. लाइव्ह मार्केट ट्रॅकर ---
+elif choice == "📊 लाइव्ह Market ट्रॅकर":
     st.title("📊 Multi-Market Live Tracker")
     st.write("yfinance वापरून लाइव्ह डेटा आणि इंडिकेटर्सचा मागोवा घ्या.")
     
