@@ -8,14 +8,15 @@ import re
 import time
 
 # ==========================================
-# भाग १: कॉन्फिगरेशन आणि Pydroid डार्क थीम
+# Pydroid 3 डार्क थीम आणि UI लेआउट कॉन्फिगरेशन
 # ==========================================
-st.set_page_config(page_title="Pydroid 3 Ultimate IDE", layout="wide")
+st.set_page_config(page_title="Advanced Pydroid Ultimate", layout="wide")
 
 LOG_FILE = "bot_output.log"
 VAULT_FILE = "secure_vault.json"
+SAVED_CODE_FILE = "user_script.py"
 
-# Pydroid 3 चा हुबेहूब लुक देणारा प्रगत CSS लेयर (टर्मिनल आणि थीम)
+# Pydroid 3 सारखा हुबेहूब लुक देणारा प्रगत CSS लेयर (नियम ५, २२)
 st.markdown("""
     <style>
     .terminal-box {
@@ -25,7 +26,7 @@ st.markdown("""
         padding: 15px;
         border-radius: 6px;
         border: 1px solid #222;
-        height: 280px;
+        height: 250px;
         overflow-y: auto;
     }
     .stApp { background-color: #0f0f12; }
@@ -34,180 +35,164 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# भाग २: सुरक्षितता आणि सिंटॅक्स क्लीनर लेयर
+# नियम ५ आणि १९: मोबाईल कीबोर्ड सिंटॅक्स क्लीनर
 # ==========================================
-def sanitize_and_clean_code(raw_code: str) -> str:
-    """मोबाईल क्युपॅडमुळे येणारे चुकीचे सिंटॅक्स आणि कोट्स क्लीन करणे"""
+def sanitize_code(raw_code: str) -> str:
+    if not raw_code:
+        return ""
     clean = raw_code.replace("\r\n", "\n")
-    # स्मार्ट कोट्सचे सामान्य कोट्समध्ये रूपांतर
-    clean = re.sub(r'[雪”]', '"', clean)
+    clean = re.sub(r'[“”]', '"', clean)
     clean = re.sub(r'[‘’]', "'", clean)
     return clean
 
-def inject_security_credentials(env_dict):
-    """एपीआय व्हॉल्टमधून की सुरक्षितपणे बॅकग्राउंड रनरमध्ये इन्जेक्ट करणे"""
+# ==========================================
+# नियम १०, २५: ऑटोमॅटिक क्रेडेंशियल इंजेक्शन
+# ==========================================
+def inject_credentials(env_dict):
     if os.path.exists(VAULT_FILE):
         try:
             with open(VAULT_FILE, "r") as f:
-                vault_data = json.load(f)
-                env_dict["EXCHANGE_API_KEY"] = vault_data.get("api_key", "")
-                env_dict["BROKER_TOTP_SECRET"] = vault_data.get("totp_secret", "")
-        except Exception:
+                vault = json.load(f)
+                env_dict["EXCHANGE_API_KEY"] = vault.get("api_key", "")
+                env_dict["TELEGRAM_BOT_TOKEN"] = vault.get("tg_token", "")
+                env_dict["TELEGRAM_CHAT_ID"] = vault.get("tg_id", "")
+        except:
             pass
-    return env_dictSuffix_ = ""
+    return env_dict
 
 # ==========================================
-# भाग ३: बॅकएंड प्रोसेस मॅनेजमेंट
+# Pydroid 3 स्क्रीनशॉटप्रमाणे साइडबार नेव्हिगेशन ऑप्शन्स
 # ==========================================
-def run_script_in_background(code_content):
-    """२४/७ बॅकग्राउंड डेमन प्रोसेस सुरू करणे (No Timeout)"""
-    clean_code = sanitize_and_clean_code(code_content)
-    with open("running_script.py", "w", encoding="utf-8") as f:
-        f.write(clean_code)
-        
-    with open(LOG_FILE, "w") as log_f:
-        env = os.environ.copy()
-        env = inject_security_credentials(env)
-        # स्वतंत्र प्रोसेस सुरू करणे जेणेकरून Streamlit क्रॅश होणार नाही
-        subprocess.Popen(
-            [sys.executable, "running_script.py"], 
-            stdout=log_f, 
-            stderr=subprocess.STDOUT, 
-            env=env
-        )
+st.sidebar.title("☰ Pydroid 3 मेनू")
 
-def stop_background_script():
-    """चालू असलेला अल्गो बोट पूर्णपणे बंद करणे"""
-    if sys.platform == "win32":
-        subprocess.run(["taskkill", "/f", "/im", "python.exe"])
-    else:
-        subprocess.run(["pkill", "-f", "running_script.py"])
-
-# ==========================================
-# भाग ४: Pydroid UI घटकांचे नेव्हिगेशन
-# ==========================================
-st.sidebar.title("📂 Pydroid 3 मेनू")
-choice = st.sidebar.radio(
-    "पर्याय निवडा:", 
-    ["📝 कोड एडिटर (IDE)", "📦 पिप मॅनेजर (Pip)", "🔐 सुरक्षित व्हॉल्ट (Vault)", "📊 लाइव्ह Market ट्रॅकर"]
+# Pydroid च्या स्क्रीनशॉट २ आणि ३ मधील सर्व ऑप्शन्स इथे समाविष्ट आहेत
+menu_choice = st.sidebar.radio(
+    "नेव्हिगेशन:",
+    ["📝 Editor & Terminal", "📂 File Operations (New/Open)", "📦 Pip Installer", "🔐 Secure Vault", "💡 Code Samples"]
 )
 
-# --- १. मुख्य कोड एडिटर विंडो ---
-if choice == "📝 कोड एडिटर (IDE)":
-    st.title("🚀 Python Algo Trading IDE")
-    st.caption("NSE/BSE शेअर बाजार, क्रिप्टो आणि फॉरेक्ससाठी २४/७ कोडिंग प्लॅटफॉर्म.")
+# --- १. मुख्य एडिटर आणि टर्मिनल (Screenshot 1 & 2) ---
+if menu_choice == "📝 Editor & Terminal":
+    st.title("🚀 Python Algo Trading Editor")
+    st.caption("NSE, क्रिप्टो आणि फॉरेक्स २४/७ बॅकग्राउंड रनर सक्रिय.")
 
-    # Pydroid सारखा एडिटर (Advanced Ace Editor)
-    default_code = (
-        "# तिन्ही मार्केटसाठी नमुना कोड स्ट्रक्चर\n"
-        "import time\n"
-        "import yfinance as yf\n"
-        "import ccxt\n\n"
-        "print('=== बोट बॅकग्राउंडला यशस्वीरित्या सुरू झाला ===')\n"
-        "while True:\n"
-        "    # उदाहरण: बँक निफ्टी आणि BTC चा डेटा ट्रॅक करणे\n"
-        "    print('मार्केट डेटा स्कॅन होत आहे...')\n"
-        "    time.sleep(10)\n"
-    )
-    
+    # फाईल उघडण्याचे लॉजिक
+    current_code = ""
+    if os.path.exists(SAVED_CODE_FILE):
+        with open(SAVED_CODE_FILE, "r", encoding="utf-8") as f:
+            current_code = f.read()
+    else:
+        current_code = "# तुमच्या अल्गो बोटाचा कोड येथे लिहा...\nimport time\nprint('Pydroid 3 Engine Active!')\n"
+
+    # Pydroid सारखा कस्टमाईज्ड एडिटर (नियम ७)
     code_input = st_ace(
-        value=default_code,
-        language="python", 
-        theme="monokai", 
-        font_size=14, 
-        height=380,
+        value=current_code,
+        language="python",
+        theme="monokai",
+        font_size=14,
+        height=320,
         auto_update=False
     )
 
-    # ॲक्शन बटन्स (रन आणि स्टॉप)
+    # नियम ११: custom toolbar shortcut बार (एडिटरच्या खाली झटपट बटन्स)
+    st.write("⌨️ **Shortcuts:**")
+    sc_col1, sc_col2, sc_col3, sc_col4, sc_col5 = st.columns(5)
+    with sc_col1: st.button("Tab Space")
+    with sc_col2: st.button("import ccxt")
+    with sc_col3: st.button("import yfinance")
+    with sc_col4: st.button("while True:")
+    with sc_col5: st.button("try / except")
+
+    # ॲक्शन बटन्स (नियम ८, २१, २३ - २४/७ डेमन रनर - No Timeout)
     col1, col2 = st.columns([2, 5])
     with col1:
-        if st.button("▶️ RUN CODE (24/7 Mode)", type="primary"):
-            run_script_in_background(code_input)
-            st.success("बोट बॅकग्राउंड लेयरवर ट्रिगर झाला!")
-            time.sleep(1)
-            st.rerun()
-    with col2:
-        if st.button("🛑 STOP CODE"):
-            stop_background_script()
-            st.warning("सर्व चालू बॅकग्राउंड प्रोसेसेस थांबवल्या आहेत.")
+        if st.button("▶️ RUN CODE", type="primary"):
+            clean_code = sanitize_code(code_input)
+            with open(SAVED_CODE_FILE, "w", encoding="utf-8") as f:
+                f.write(clean_code)
+                
+            with open(LOG_FILE, "w") as log_f:
+                env = os.environ.copy()
+                env = inject_credentials(env)
+                # स्वतंत्र सब-प्रोसेस runner (नियम १३, २३)
+                subprocess.Popen([sys.executable, SAVED_CODE_FILE], stdout=log_f, stderr=subprocess.STDOUT, env=env)
+            st.success("बोट बॅकग्राउंडला २४ तास मोडवर सुरू झाला!")
             time.sleep(1)
             st.rerun()
 
-    # रिड-ओन्ली लाइव्ह टर्मिनल विंडो
-    st.subheader("🖥️ टर्मिनल आऊटपुट (Read-Only Terminal)")
+    with col2:
+        if st.button("🛑 STOP BOT"):
+            if sys.platform == "win32":
+                subprocess.run(["taskkill", "/f", "/im", "python.exe"])
+            else:
+                subprocess.run(["pkill", "-f", SAVED_CODE_FILE])
+            st.warning("चालू असलेला अल्गो बोट पूर्णपणे थांबवला आहे.")
+            time.sleep(1)
+            st.rerun()
+
+    # नियम २२: रिड-ओन्ली टर्मिनल आउटपुट विंडो
+    st.subheader("🖥️ टर्मिनल विंडो (Read-Only Console)")
     if os.path.exists(LOG_FILE):
         with open(LOG_FILE, "r") as f:
-            terminal_logs = f.read()
+            logs = f.read()
     else:
-        terminal_logs = "टर्मिनल रिकामे आहे. कोड रन केल्यानंतर येथे आउटपुट दिसेल..."
-        
-    st.markdown(f'<div class="terminal-box"><pre>{terminal_logs}</pre></div>', unsafe_allow_html=True)
-    if st.button("🔄 टर्मिनल रिफ्रेश करा"):
-        st.rerun()
+        logs = "टर्मिनल रिकामे आहे. कोड रन केल्यानंतर रिझल्ट येथे दिसेल."
+    st.markdown(f'<div class="terminal-box"><pre>{logs}</pre></div>', unsafe_allow_html=True)
 
-# --- २. पिप पॅकेज मॅनेजर ---
-elif choice == "📦 पिप मॅनेजर (Pip)":
-    st.title("📦 Pip Package Manager")
-    st.write("तुमच्या अल्गो बोटाला लागणाऱ्या लायब्ररीज (उदा. yfinance, ccxt, ta) येथून थेट इन्स्टॉल करा.")
+# --- २. फाईल ऑपरेशन्स (New / Open / Save As - Screenshot 2) ---
+elif menu_choice == "📂 File Operations (New/Open)":
+    st.title("📂 File Management")
     
-    package_name = st.text_input("लायब्ररीचे नाव टाका:")
-    if st.button("📥 Install Package", type="primary"):
-        if package_name:
-            st.info(f"Installing {package_name}... कृपया टर्मिनल तपासा.")
-            subprocess.Popen([sys.executable, "-m", "pip", "install", package_name])
-            st.success(f"{package_name} इन्स्टॉलेशन बॅकग्राउंडला सुरू झाले आहे!")
+    file_action = st.selectbox("ॲक्शन निवडा:", ["New File", "Open Saved File", "Save Backup"])
+    
+    if file_action == "New File":
+        if st.button("🆕 नवीन कोरी फाईल तयार करा"):
+            if os.path.exists(SAVED_CODE_FILE): os.remove(SAVED_CODE_FILE)
+            if os.path.exists(LOG_FILE): os.remove(LOG_FILE)
+            st.success("नवीन फाईल तयार झाली! एडिटर टॅबवर जा.")
+            
+    elif file_action == "Open Saved File":
+        if os.path.exists(SAVED_CODE_FILE):
+            st.info(f"सध्या स्टोरेजमध्ये '{SAVED_CODE_FILE}' उपलब्ध आहे.")
         else:
-            st.error("कृपया वैध लायब्ररीचे नाव टाका.")
+            st.warning("कोणतीही सेव्ह फाईल सापडली नाही.")
 
-# --- ३. सुरक्षित एपीआय व्हॉल्ट ---
-elif choice == "🔐 सुरक्षित व्हॉल्ट (Vault)":
-    st.title("🔐 Secure API Key Vault")
-    st.write("तुमचे सिक्रेट पासवर्ड्स, ब्रोकर्सच्या API की आणि TOTP क्रेडेंशियल्स येथे सुरक्षित सेव्ह करा.")
+# --- ३. पिप पॅकेज मॅनेजर (Screenshot 3) ---
+elif menu_choice == "📦 Pip Installer":
+    st.title("📦 Pip Package Manager")
+    st.write("लायब्ररीज थेट पीआयपी (PyPI) वरून इन्स्टॉल करा.")
     
-    saved_api = ""
-    saved_totp = ""
-    if os.path.exists(VAULT_FILE):
-        try:
-            with open(VAULT_FILE, "r") as f:
-                data = json.load(f)
-                saved_api = data.get("api_key", "")
-                saved_totp = data.get("totp_secret", "")
-        except: pass
+    lib_to_install = st.text_input("लायब्ररीचे अचूक नाव टाका (उदा. requests, ta):")
+    if st.button("📥 Install", type="primary"):
+        if lib_to_install:
+            st.info(f"'{lib_to_install}' इन्स्टॉलेशन सुरू झाले आहे...")
+            res = subprocess.run([sys.executable, "-m", "pip", "install", lib_to_install], capture_output=True, text=True)
+            st.code(res.stdout)
+        else:
+            st.error("कृपया नाव टाका.")
 
-    # दुरुस्त केलेल्या ओळी (ओळ क्र. १२४ आणि १२५ चे अचूक रूप)
-    api_key_input = st.text_input("Exchange / Broker API Key:", value=saved_api, type="password")
-    totp_input = st.text_input("TOTP Google Authenticator Secret (2FA):", value=saved_totp, type="password")
+# --- ४. सुरक्षित क्रेडेंशियल्स व्हॉल्ट (नियम १०, २५) ---
+elif menu_choice == "🔐 Secure Vault":
+    st.title("🔐 API & Telegram Configuration Vault")
     
-    if st.button("🔒 Save Credentials Securely"):
-        vault_payload = {"api_key": api_key_input, "totp_secret": totp_input}
+    api_k = st.text_input("Exchange/Broker API Key:", type="password")
+    tg_t = st.text_input("Telegram Bot Token:", type="password")
+    tg_i = st.text_input("Telegram Chat ID:")
+    
+    if st.button("🔒 Save Details", type="primary"):
         with open(VAULT_FILE, "w") as f:
-            json.dump(vault_payload, f)
-        st.success("क्रेडेंशियल्स सेव्ह केले गेले आहेत आणि कोड रन करताना ते ऑटो-इन्जेक्ट होतील!")
+            json.dump({"api_key": api_k, "tg_token": tg_t, "tg_id": tg_i}, f)
+        st.success("डिटेल्स सेव्ह झाल्या! कोड रन करताना या ऑटो-इंजेक्ट होतील.")
 
-# --- ४. लाइव्ह मार्केट ट्रॅकर ---
-elif choice == "📊 लाइव्ह Market ट्रॅकर":
-    st.title("📊 Multi-Market Live Tracker")
-    st.write("yfinance वापरून लाइव्ह डेटा आणि इंडिकेटर्सचा मागोवा घ्या.")
+# --- ५. कोड सॅम्पल्स (Pydroid Samples Option) ---
+elif menu_choice == "💡 Code Samples":
+    st.title("💡 Ready-to-Use Trading Samples")
+    st.write("खालील रेडीमेड सॅम्पल कोड कॉपी करून तुम्ही थेट एडिटरमध्ये वापरू शकता:")
     
-    market_select = st.selectbox("मार्केट प्रकार निवडा:", ["Indian (NSE)", "Crypto", "Forex"])
+    st.subheader("१. क्रिप्टो मार्केट स्कॅनर (CCXT)")
+    st.code("""import ccxt
+print('Delta Exchange Coins:', len(ccxt.delta().load_markets()))""", language="python")
     
-    if market_select == "Indian (NSE)":
-        ticker = st.text_input("NSE सिम्बॉल टाका (उदा. ^NSEI, RELIANCE.NS):", "^NSEI")
-    elif market_select == "Crypto":
-        ticker = st.text_input("क्रिप्टो पेअर टाका (उदा. BTC-USD, ETH-USD):", "BTC-USD")
-    else:
-        ticker = st.text_input("फॉरेक्स पेअर टाका (उदा. EURUSD=X, GBPUSD=X):", "EURUSD=X")
-        
-    if st.button("📈 Fetch Market Price"):
-        import yfinance as yf
-        try:
-            data = yf.Ticker(ticker).history(period="1d", interval="5m")
-            if not data.empty:
-                last_price = data['Close'].iloc[-1]
-                st.metric(label=f"Current Price ({ticker})", value=f"{last_price:.2f}")
-                st.line_chart(data['Close'])
-            else:
-                st.error("डेटा मिळाला नाही, कृपया सिम्बॉल तपासा.")
-        except Exception as e:
-            st.error(f"एरर आला: {e}")
+    st.subheader("२. शेअर बाजार आणि फॉरेक्स डेटा (yfinance)")
+    st.code("""import yfinance as yf
+print(yf.Ticker('RELIANCE.NS').history(period='1d'))""", language="python")
