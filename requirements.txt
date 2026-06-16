@@ -4,3 +4,5 @@ numba
 pandas
 requests
 numpy
+yfinance 
+stremlit-ace 
