@@ -1,28 +1,47 @@
 name: AlgoDroid Pro Android Cloud Build
 
 on:
-  workflow_dispatch: # मोबाईलवरून मॅन्युअली रन करण्यासाठी बटण
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository Code
+      - name: Checkout Code Repository
         uses: actions/checkout@v4
 
-      - name: Set up Python Runtime Environmet
-        uses: actions/setup-python@v5
+      - name: Set up Java Development Kit (JDK 17)
+        uses: actions/setup-java@v4
         with:
-          python-version: '3.12'
+          distribution: 'zulu'
+          java-version: '17'
 
-      - name: Verify All 25 Core Rules & Python Integrity
+      - name: Set up Google Flutter Framework
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          channel: 'stable'
+
+      - name: Inject Code Architecture Inside Compiler Folder
         run: |
-          # तुमच्या मुख्य app.py ची अचूक तपासणी करून सर्व बदल एकत्रित कंपाईल करणे
-          python app.py
+          mkdir -p temp_holding
+          cp main.dart temp_holding/main.dart
+          cp pubspec.yaml temp_holding/pubspec.yaml
+          rm -rf * .github
+          flutter create . --org com.algodroid.pro --project-name algodroid_pro --overwrite
+          rm -f lib/main.dart
+          cp temp_holding/main.dart lib/main.dart
+          cp temp_holding/pubspec.yaml pubspec.yaml
 
-      - name: Create System Deployment PackageArtifact
+      - name: Build and Download Packages
+        run: flutter pub get
+
+      - name: Compile High-Size Production Android APK
+        run: flutter build apk --debug --no-pub
+
+      - name: Upload Real Android APK Installation File
         uses: actions/upload-artifact@v4
         with:
-          name: AlgoDroid-Pro-Installation-File
-          path: app.py # तुमच्या मूळच्या सिस्टीम फाईल्स थेट मोबाईलमध्ये डाऊनलोडसाठी पॅक करणे
+          name: AlgoDroid-Pro-APK-Package
+          path: build/app/outputs/flutter-apk/app-debug.apk
