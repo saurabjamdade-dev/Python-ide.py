@@ -11,14 +11,14 @@ jobs:
       - name: Checkout Code Repository
         uses: actions/checkout@v4
 
-      # १. जावा १७ चे अधिकृत आणि प्रमाणित गुगल-अँड्रॉइड इंजिन स्थापित करणे
+      # १. जावा १७ चे अधिकृत गुगल-अँड्रॉइड इंजिन स्थापित करणे
       - name: Set up Java JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      # २. वर्कस्पेस मधील सर्व जुना बॅकएंड कचरा पूर्णपणे साफ करणे
+      # २. वर्कस्पेस मधील सर्व जुना कचरा पूर्णपणे साफ करणे
       - name: Clean Environment Workspace Safely
         run: |
           find . -maxdepth 1 ! -name '.github' ! -name '.' -exec rm -rf {} +
@@ -167,7 +167,7 @@ jobs:
           }
           EOF
 
-      # १०. नियम ५, ६, ११ व १२: इनपुट-आउटपुट कन्सोल, क्लिपबोर्ड आणि सॅनिटायझर मॅनेजर (MainActivity.kt)
+      # १०. नियम ५, ६, ११ व XII: इनपुट-आउटपुट कन्सोल, क्लिपबोर्ड आणि सॅनिटायझर मॅनेजर (MainActivity.kt)
       - name: Setup Main UI Core Control Logic Interface
         run: |
           cat << 'EOF' > app/src/main/java/com/algodroid/pro/MainActivity.kt
@@ -221,9 +221,13 @@ jobs:
                   time.sleep(60)
           EOF
 
-      # फॉल्ट दुरुस्ती: बाहेरील न सापडणाऱ्या प्लगइन ऐवजी थेट लिनक्सद्वारे अधिकृत रॅपर जनरेट करणे
-      - name: Self-Generate Verified Linux Gradle Wrapper Engine
+      # फॉल्ट दुरुस्ती: गिटहब क्लाउडवर अधिकृत आणि १००% अचूक ग्रॅडल एक्झिक्युटेबल रॅपर जनरेट करणे
+      - name: Auto-Generate Official Gradle Wrapper Executable
         run: |
+          cd $GITHUB_WORKSPACE
+          npm install -g gradle-to-js || true
+          # शुद्ध लिनक्स रॅपर स्क्रिप्ट थेट इन्स्टॉल करणे
+          wget https://raw.githubusercontent.com/gradle/gradle/v8.2.0/gradlew
           mkdir -p gradle/wrapper
           cat << 'EOF' > gradle/wrapper/gradle-wrapper.properties
           distributionBase=GRADLE_USER_HOME
@@ -232,15 +236,14 @@ jobs:
           zipStoreBase=GRADLE_USER_HOME
           zipStorePath=wrapper/dists
           EOF
-          sed -i 's/\r$//' gradle/wrapper/gradle-wrapper.properties
+          chmod +x gradlew
 
-      # १२. अंतिम कडक आणि विना-एरर कॉम्पिलेशन (थेट सिस्टीम कमांडने)
+      # १२. अंतिम मास्टर नेटिव्ह अँड्रॉइड कॉम्पिलेशन (./gradlew द्वारे सुरक्षित रन)
       - name: Force Compile High-Performance Native Android Production APK
         run: |
-          chmod +x -R * || true
-          gradle assembleDebug --no-daemon
+          ./gradlew assembleDebug --no-daemon
 
-      # १३. अंतिम तयार झालेला ५०-६० MB चा कडक APK पॅकेज अपलोड करणे
+      # १३. अंतिम तयार झालेला कडक APK पॅकेज गिटहब आर्टिफॅक्ट्स मध्ये सुरक्षित अपलोड करणे
       - name: Upload Clean Master AlgoDroid Pro APK Package
         uses: actions/upload-artifact@v4
         with:
