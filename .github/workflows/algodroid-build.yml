@@ -18,7 +18,7 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      # ②. वर्कस्पेस मधील सर्व जुना कचरा पूर्णपणे साफ करणे
+      # २. वर्कस्पेस मधील सर्व जुना कचरा पूर्णपणे साफ करणे
       - name: Clean Environment Workspace Safely
         run: |
           find . -maxdepth 1 ! -name '.github' ! -name '.' -exec rm -rf {} +
@@ -142,7 +142,7 @@ jobs:
           </LinearLayout>
           EOF
 
-      # ९. नियम ८ व २०: २४/७ इंडिपेंडंट डॅमन बॅकग्राउंड सर्व्हिस कोटलिन कोड (AlgoDaemonService.kt)
+      # ९. नियम ८ व २०: २४/७ अखंड बॅकग्राउंड सर्व्हिस कोटलिन कोड (AlgoDaemonService.kt)
       - name: Setup Core Background Daemon Service Layer
         run: |
           cat << 'EOF' > app/src/main/java/com/algodroid/pro/AlgoDaemonService.kt
@@ -221,30 +221,20 @@ jobs:
                   time.sleep(60)
           EOF
 
-      # फॉल्ट दुरुस्ती: बाहेरील नेटवर्कवर न जाता थेट इन-बिल्ट जावा इंजिन वापरून मूळ रॅपर स्थापित करणे
-      - name: Force Core Environment Wrapper Generation
+      # फॉल्ट दुरुस्ती: बाहेरील कोणत्याही रेडीमेड प्लगइन शिवाय थेट लिनक्सवर ग्रॅडल इंजिन डाऊनलोड करून सेट करणे
+      - name: Install Pure Linux Gradle Engine Globally
         run: |
-          mkdir -p gradle/wrapper
-          cat << 'EOF' > gradle/wrapper/gradle-wrapper.properties
-          distributionBase=GRADLE_USER_HOME
-          distributionPath=wrapper/dists
-          distributionUrl=https\://services.gradle.org/distributions/gradle-8.2-bin.zip
-          zipStoreBase=GRADLE_USER_HOME
-          zipStorePath=wrapper/dists
-          EOF
-          # गुगलच्या स्वतःच्या अंतर्गत इंजिनद्वारे रॅपरला थेट सक्रिय करणे
-          jar -cvf dummy.jar build.gradle.kts || true
-          # थेट कॉम्पिलेशन हुक तयार करणे
-          echo '#!/bin/sh' > gradlew
-          echo 'gradle "$@"' >> gradlew || true
-          
-      # १२. अधिकृत गिटहब-ग्रॅडल ॲक्शनद्वारे थेट आणि सुरक्षित कॉम्पिलेशन सुरू करणे
-      - name: Execute High-Performance Native Android Cloud Build
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: assembleDebug --no-daemon
+          wget https://services.gradle.org/distributions/gradle-8.2-bin.zip
+          sudo mkdir /opt/gradle
+          sudo unzip -d /opt/gradle gradle-8.2-bin.zip
+          echo "/opt/gradle/gradle-8.2/bin" >> $GITHUB_PATH
 
-      # १३. अंतिम कडक APK सुरक्षितपणे अपलोड करणे
+      # १२. थेट स्वतंत्र लिनक्स सिस्टीम कमांडने मूळ कडक अँड्रॉइड कॉम्पिलेशन सुरू करणे
+      - name: Force Compile High-Performance Native Android Production APK
+        run: |
+          gradle assembleDebug --no-daemon
+
+      # १३. अंतिम तयार झालेला कडक APK पॅकेज गिटहब आर्टिफॅक्ट्स मध्ये सुरक्षित अपलोड करणे
       - name: Upload Clean Master AlgoDroid Pro APK Package
         uses: actions/upload-artifact@v4
         with:
