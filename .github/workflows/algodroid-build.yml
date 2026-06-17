@@ -11,19 +11,19 @@ jobs:
       - name: Checkout Code Repository
         uses: actions/checkout@v4
 
-      - name: Set up Java Development Kit (JDK 17)
+      - name: Set up Java JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Set up Google Flutter Framework
+      - name: Set up Flutter Framework
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: Safely Move and Rebuild Structure Without Data Loss
+      - name: Extract and Map Clean Core Architecture
         run: |
           mkdir -p temp_holding
           cp main.dart temp_holding/main.dart
@@ -34,13 +34,13 @@ jobs:
           cp temp_holding/main.dart lib/main.dart
           cp temp_holding/pubspec.yaml pubspec.yaml
 
-      - name: Build and Download Packages
+      - name: Load Environment Dependencies
         run: flutter pub get
 
-      - name: Compile Real Production Android APK
+      - name: Compile High Size Android Application APK
         run: flutter build apk --debug --no-pub
 
-      - name: Upload Finished Production APK Package
+      - name: Upload Master AlgoDroid Pro APK Package
         uses: actions/upload-artifact@v4
         with:
           name: AlgoDroid-Pro-APK-Package
