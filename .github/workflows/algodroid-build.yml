@@ -1,7 +1,7 @@
 name: AlgoDroid Pro Android Cloud Build
 
 on:
-  workflow_dispatch: # मोबाईल मॅन्युअल ट्रिगर बटण
+  workflow_dispatch:
 
 jobs:
   build:
@@ -24,8 +24,14 @@ jobs:
           channel: 'stable'
 
       - name: Recreate Android Project Core Structure
-        # ही कमांड सर्व गहाळ फोल्डर्स आणि गराडल फाईल्स बॅकएंडला ऑटो-जनरेट करेल
         run: flutter create . --org com.algodroid.pro --project-name algodroid_pro --overwrite
+
+      - name: Restore True AlgoDroid Core UI
+        # ही मॅजिकल कमांड काउंटर ॲप हटवून आपला खरा main.dart रिस्टोर करेल
+        run: |
+          git checkout main.dart
+          git checkout pubspec.yaml
+          git checkout AndroidManifest.xml
 
       - name: Get dependencies
         run: flutter pub get
