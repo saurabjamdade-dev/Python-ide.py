@@ -1,0 +1,35 @@
+name: algodroid_pro
+description: "A production-grade algorithmic trading IDE for Android."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # UI आणि स्टेट मॅनेजमेंट
+  provider: ^6.1.1
+  cupertino_icons: ^1.0.6
+  
+  # एडिटर आणि चार्ट्स चालवण्यासाठी हाय-स्पीड वेबव्ह्यू
+  webview_flutter: ^4.4.2
+  
+  # API Vault सुरक्षेसाठी (AES-256 Encryption)
+  flutter_secure_storage: ^9.0.0
+  local_auth: ^2.1.8
+  
+  # फाईल मॅनेजर आणि क्लाउड सिंक (Google Drive / GitHub)
+  file_picker: ^6.1.1
+  path_provider: ^2.1.1
+  http: ^1.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
