@@ -1,40 +1,36 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
-name: Python package
+name: AlgoDroid Pro Android Cloud Build
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch: # मोबाईलवरून मॅन्युअली रन करण्यासाठी बटण देईल
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.9", "3.10", "3.11"]
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install flake8 pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-        pytest
+      - name: Checkout Repository Code
+        uses: actions/checkout@v3
+
+      - name: Set up Java Development Kit (JDK)
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Set up Flutter Environment
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          channel: 'stable'
+
+      - name: Install App Dependencies
+        run: flutter pub get
+
+      - name: Compile and Build Release APK
+        run: flutter build apk --debug --no-pub # पहिल्यांदा टेस्ट करण्यासाठी फास्ट डीबग बिल्ड
+
+      - name: Upload Finished APK To Download Section
+        uses: actions/upload-artifact@v3
+        with:
+          name: AlgoDroid-Pro-Installation-File
+          path: build/app/outputs/flutter-apk/app-debug.apk
