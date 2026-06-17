@@ -17,10 +17,10 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      # १. वर्कस्पेस मधील सर्व जुना बॅकएंड कचरा पूर्णपणे साफ करणे
-      - name: Force Clean Environment Workspace
+      # १. गिटहबची स्वतःची सिस्टीम सोडून बाकीचा जुना कचरा साफ करणे (आता कोड बंद पडणार नाही)
+      - name: Clean Environment Workspace Safely
         run: |
-          rm -rf * .github
+          find . -maxdepth 1 ! -name '.github' ! -name '.' -exec rm -rf {} +
           
       # २. मूळ शुद्ध डीरेक्टरी रचना तयार करणे
       - name: Establish Native Directories
@@ -30,7 +30,7 @@ jobs:
           mkdir -p app/src/main/res/values
           mkdir -p app/src/main/python
 
-      # ३. प्रोजेक्ट लेव्हल कडक ग्रॅडल रचना
+      # ३. प्रोजेक्ट लेव्हल ग्रॅडल रचना
       - name: Setup Root Project Gradle Configuration
         run: |
           cat << 'EOF' > build.gradle.kts
@@ -42,7 +42,7 @@ jobs:
           tasks.register<Delete>("clean") { delete(rootProject.buildDir) }
           EOF
 
-      # ४. नियम १७: डॅशबोर्ड राउटींग पाथ आणि Chaquopy केंद्रीय सर्व्हर लिंक जोडली
+      # ४. नियम १७: डॅशबोर्ड राउटींग पाथ आणि Chaquopy केंद्रीय सर्व्हर लिंक
       - name: Setup Settings Gradle System Configuration
         run: |
           cat << 'EOF' > settings.gradle.kts
@@ -220,7 +220,7 @@ jobs:
                   time.sleep(60)
           EOF
 
-      # हिडन लिनक्स कॅरेक्टर एरर पूर्णपणे टाळण्यासाठी स्वयंचलित आणि सुरक्षित ग्रॅडल जनरेटर ॲक्शन
+      # स्वयंचलित आणि सुरक्षित ग्रॅडल जनरेटर ॲक्शन
       - name: Auto-Inject Verified Gradle Wrapper Environment
         uses: gradle/actions/setup-gradle@v3
         with:
