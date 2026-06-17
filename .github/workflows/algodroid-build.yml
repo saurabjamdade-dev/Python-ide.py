@@ -9,10 +9,10 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4 # लेटेस्ट एरर-फ्री व्हर्जन
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4 # अपडेटेड ॲक्शन व्हर्जन
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
@@ -30,7 +30,7 @@ jobs:
         run: flutter build apk --debug --no-pub
 
       - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4 # नवीन अपडेटेड अपलोडर
+        uses: actions/upload-artifact@v4 # इथे आपण v4 केले आहे, त्यामुळे आता एरर येणार नाही
         with:
           name: AlgoDroid-Pro-Installation-File
           path: build/app/outputs/flutter-apk/app-debug.apk
