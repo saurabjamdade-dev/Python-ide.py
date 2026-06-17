@@ -9,24 +9,20 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="#FFFFFF">
+        android:orientation="vertical">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="#2B78B6"
-            app:title="ultra_sniper_v29.py"
-            app:titleTextColor="#FFFFFF"
-            app:navigationIcon="@android:drawable/ic_menu_sort_by_size" />
+            app:title="ultra_sniper_v29.py" />
 
         <LinearLayout
             android:id="@+id/statusBanner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#1B5E20"
-            android:orientation="horizontal"
             android:padding="6dp">
             <TextView
                 android:layout_width="0dp"
@@ -34,54 +30,41 @@
                 android:layout_weight="1"
                 android:text="⚡ 24/7 BACKGROUND ENGINE: PRO_LOCK ACTIVE"
                 android:textColor="#FFFFFF"
-                android:textSize="11sp"
-                android:textStyle="bold" />
+                android:textSize="11sp" />
             <TextView
                 android:id="@+id/btnToggleDaemon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TOGGLE"
                 android:textColor="#FFEB3B"
-                android:textSize="11sp"
-                android:textStyle="bold"
-                android:paddingEnd="5dp"/>
+                android:textSize="11sp" />
         </LinearLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
-
             <EditText
                 android:id="@+id/codeEditor"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#FFFFFF"
-                android:gravity="top|start"
-                android:hint="# लिहून कोडिंग सुरू करा..."
-                android:inputType="textMultiLine|textNoSuggestions"
+                android:gravity="top"
+                android:hint="# Start Coding..."
                 android:padding="16dp"
-                android:scrollbars="vertical"
-                android:textColor="#000000"
-                android:fontFamily="monospace"
-                android:textSize="14sp" />
-
+                android:fontFamily="monospace" />
             <LinearLayout
                 android:id="@+id/terminalView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#000000"
-                android:orientation="vertical"
                 android:padding="12dp"
                 android:visibility="gone">
                 <TextView
                     android:id="@+id/txtTerminalLog"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Terminal Loaded. CPython 3.12 Live Compiler Ready...\n--------------------------------------------------\n"
                     android:textColor="#00FF00"
-                    android:fontFamily="monospace"
-                    android:textSize="13sp" />
+                    android:fontFamily="monospace" />
             </LinearLayout>
         </FrameLayout>
 
@@ -94,11 +77,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp" />
+                android:gravity="center_vertical" />
         </HorizontalScrollView>
-
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -106,50 +86,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="62dp"
+        android:layout_margin="20dp"
         android:backgroundTint="#FBC02D"
-        app:tint="#000000"
-        app:fabSize="normal"
         app:srcCompat="@android:drawable/ic_media_play" />
-
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/navigationView"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="#FFFFFF">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="90dp"
-                android:background="#2B78B6" />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:text="📁 File Manager"
-                android:textSize="16sp"
-                android:textColor="#000000" />
-            <TextView
-                android:id="@+id/menuPipManager"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:text="📦 Pip Package Manager"
-                android:textSize="16sp"
-                android:textColor="#000000" />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:text="🔐 Security Vault"
-                android:textSize="16sp"
-                android:textColor="#000000" />
-        </LinearLayout>
-    </com.google.android.material.navigation.NavigationView>
-
 </androidx.drawerlayout.widget.DrawerLayout>
