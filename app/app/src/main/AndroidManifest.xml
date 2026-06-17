@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.algodroid.pro">
+
+    <!-- नियम ६, ८ व २०: बॅकग्राउंड इंजिन, इंटरनेट आणि क्लिपबोर्डसाठी लागणाऱ्या परवानग्या -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="AlgoDroid Pro"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.NoActionBar">
+
+        <!-- नियम २२: मुख्य डॅशबोर्ड क्रियाकलाप (Main UI Dashboard) -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- नियम ८ आणि २०: २४/७ अखंड चालणारी स्वतंत्र डॅमन सर्व्हिस -->
+        <service
+            android:name=".AlgoDaemonService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_DESCRIPTION" 
+                android:value="Persistent Python CPython runtime execution engine for 24/7 automated algorithmic market trading scripts." />
+        </service>
+
+    </application>
+</manifest>
