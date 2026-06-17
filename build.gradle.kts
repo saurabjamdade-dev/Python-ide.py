@@ -1,10 +1,44 @@
 plugins {
-    id("com.android.application") version "8.2.0" apply false
-    id("org.jetbrains.kotlin.android") version "1.9.20" apply false
-    // नियम ३ व १८: जड आणि हलक्या पायथन लायब्ररी चालवण्यासाठी CPython प्लगिन
-    id("com.chaquo.python") version "15.0.1" apply false
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("com.chaquo.python")
 }
 
-tasks.register<Delete>("clean") {
-    delete(rootProject.buildDir)
+android {
+    namespace = "com.algodroid.pro"
+    compileSdk = 34
+
+    defaultConfig {
+        applicationId = "com.algodroid.pro"
+        minSdk = 26
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0.0"
+
+        ndk {
+            abiFilters.addAll(setOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
+        }
+
+        python {
+            version = "3.12"
+            pip {
+                install("pandas")
+                install("numpy")
+                install("ccxt")
+                install("yfinance")
+                install("numba")
+            }
+        }
+    }
+
+    buildFeatures {
+        viewBinding = true
+    }
+}
+
+dependencies {
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.11.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 }
