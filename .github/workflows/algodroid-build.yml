@@ -142,7 +142,7 @@ jobs:
           </LinearLayout>
           EOF
 
-      # ९. नियम ८ व २०: २४/७ अखंड बॅकग्राउंड सर्व्हिस कोटलिन कोड (AlgoDaemonService.kt)
+      # ९. नियम ८ व २०: २४/७ अखंड डॅमन सर्व्हिस कोटलिन कोड (AlgoDaemonService.kt)
       - name: Setup Core Background Daemon Service Layer
         run: |
           cat << 'EOF' > app/src/main/java/com/algodroid/pro/AlgoDaemonService.kt
@@ -221,7 +221,7 @@ jobs:
                   time.sleep(60)
           EOF
 
-      # फॉल्ट दुरुस्ती: बाहेरील कोणत्याही रेडीमेड प्लगइन शिवाय थेट लिनक्सवर ग्रॅडल इंजिन डाऊनलोड करून सेट करणे
+      # स्वतंत्र लिनक्स ग्रॅडल इंजिन डाऊनलोड करणे
       - name: Install Pure Linux Gradle Engine Globally
         run: |
           wget https://services.gradle.org/distributions/gradle-8.2-bin.zip
@@ -229,7 +229,13 @@ jobs:
           sudo unzip -d /opt/gradle gradle-8.2-bin.zip
           echo "/opt/gradle/gradle-8.2/bin" >> $GITHUB_PATH
 
-      # १२. थेट स्वतंत्र लिनक्स सिस्टीम कमांडने मूळ कडक अँड्रॉइड कॉम्पिलेशन सुरू करणे
+      # ⚡ फॉल्ट दुरुस्ती: गिटहबच्या अँड्रॉइड SDK चे लोकेशन ग्रॅडल इंजिनला अचूक लिंक करणे
+      - name: Auto-Inject Certified Android SDK Property Path
+        run: |
+          echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
+          echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+
+      # १२. अंतिम मास्टर कडक अँड्रॉइड कॉम्पिलेशन सुरू करणे
       - name: Force Compile High-Performance Native Android Production APK
         run: |
           gradle assembleDebug --no-daemon
