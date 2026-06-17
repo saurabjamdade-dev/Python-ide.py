@@ -23,7 +23,7 @@ jobs:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: Inject Code Architecture Inside Compiler Folder
+      - name: Safely Move and Rebuild Structure Without Data Loss
         run: |
           mkdir -p temp_holding
           cp main.dart temp_holding/main.dart
@@ -37,10 +37,10 @@ jobs:
       - name: Build and Download Packages
         run: flutter pub get
 
-      - name: Compile High-Size Production Android APK
+      - name: Compile Real Production Android APK
         run: flutter build apk --debug --no-pub
 
-      - name: Upload Real Android APK Installation File
+      - name: Upload Finished Production APK Package
         uses: actions/upload-artifact@v4
         with:
           name: AlgoDroid-Pro-APK-Package
