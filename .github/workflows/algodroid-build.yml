@@ -23,6 +23,10 @@ jobs:
           flutter-version: '3.19.0'
           channel: 'stable'
 
+      - name: Recreate Android Project Core Structure
+        # ही कमांड सर्व गहाळ फोल्डर्स आणि गराडल फाईल्स बॅकएंडला ऑटो-जनरेट करेल
+        run: flutter create . --org com.algodroid.pro --project-name algodroid_pro --overwrite
+
       - name: Get dependencies
         run: flutter pub get
 
@@ -30,7 +34,7 @@ jobs:
         run: flutter build apk --debug --no-pub
 
       - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4 # इथे आपण v4 केले आहे, त्यामुळे आता एरर येणार नाही
+        uses: actions/upload-artifact@v4
         with:
           name: AlgoDroid-Pro-Installation-File
           path: build/app/outputs/flutter-apk/app-debug.apk
