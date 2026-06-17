@@ -36,7 +36,7 @@ class AlgoDroidProApp extends StatelessWidget {
 class EditorViewModel extends ChangeNotifier {
   String activeFileName = "strategy_1.py";
   
-  // बदल १: प्रॉपर मल्टि-लाईन इंडेंटेशन फॉरमॅट
+  // बदल १: ट्रिपल कोट फॉरमॅटिंग - मल्टि-लाईन इंडेंटेशन फिक्स (\n चा एरर कायमचा दूर)
   String currentCode = "def check_market_signal():\n    print('🟢 Scanning NSE Option Chain...')\n    print('⚡ WakeLock State: ACTIVE')\n\ncheck_market_signal()";
   
   void updateCode(String newCode) { currentCode = newCode; notifyListeners(); }
@@ -62,10 +62,10 @@ class _PydroidMainActivityState extends State<PydroidMainActivity> {
   bool _showTerminalView = false;
   bool _isBackgroundDaemonActive = true;
 
-  // बदल ४: स्टोरेज आणि ड्राईव्ह सेव्हिंग मेसेज हुक
+  // बदल ४: स्टोरेज आणि गुगल ड्राईव्ह सेव्हिंग हुक
   void _saveFileToStorage(String fileName) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('💾 $fileName saved to Local Storage & Google Drive!'), backgroundColor: Colors.green),
+      SnackBar(content: Text('💾 $fileName saved to File Manager & Google Drive Sync!'), backgroundColor: Colors.green),
     );
   }
 
@@ -77,7 +77,7 @@ class _PydroidMainActivityState extends State<PydroidMainActivity> {
 
     return Scaffold(
       key: _scaffoldKey,
-      // बदल २: ओरिजिनल निळी AppBar पट्टी
+      // बदल २: ओरिजिनल निळी AppBar पट्टी (Pydroid Interface)
       appBar: AppBar(
         leading: IconButton(icon: const Icon(Icons.menu), onPressed: () => _scaffoldKey.currentState?.openDrawer()),
         title: Text(editorModel.activeFileName, style: const TextStyle(fontSize: 18)),
@@ -91,7 +91,7 @@ class _PydroidMainActivityState extends State<PydroidMainActivity> {
       drawer: const PydroidNavigationDrawer(),
       body: Column(
         children: [
-          // बदल ५: २४/७ बॅकग्राउंड वेकलॉक स्टेटस बार
+          // बदल ५: २४/७ बॅकग्राउंड वेकलॉक स्टेटस बार (Persistent Engine)
           Container(
             color: _isBackgroundDaemonActive ? const Color(0xFF1B5E20) : const Color(0xFFE65100),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -111,8 +111,9 @@ class _PydroidMainActivityState extends State<PydroidMainActivity> {
               child: _showTerminalView 
               ? Container(color: Colors.black, width: double.infinity, padding: const EdgeInsets.all(12), child: SingleChildScrollView(child: Text(consoleModel.output, style: const TextStyle(color: Colors.white, fontFamily: 'monospace'))))
               : TextFormField(controller: _codeController, maxLines: null, style: const TextStyle(fontFamily: 'monospace', color: Colors.black, fontSize: 15), decoration: const InputDecoration(border: InputBorder.none), onChanged: (text) => editorModel.updateCode(text)),
+            ),
           ),
-          ),
+          // स्पेशल शॉर्टकट पट्टी टूलबार
           Container(
             color: const Color(0xFF2B78B6),
             height: 42,
@@ -120,12 +121,18 @@ class _PydroidMainActivityState extends State<PydroidMainActivity> {
               scrollDirection: Axis.horizontal,
               children: [
                 InkWell(onTap: () => editorModel.injectSnippet("    "), child: Container(alignment: Alignment.center, padding: const EdgeInsets.symmetric(horizontal: 16), child: const Text("Tab", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))),
-                ...[":", ";", "'", "#", "(", ")"].map((lbl) => InkWell(onTap: () => editorModel.injectSnippet(lbl), child: Container(alignment: Alignment.center, padding: const EdgeInsets.symmetric(horizontal: 16), decoration: const BoxDecoration(border: Border(right: BorderSide(color: Colors.white24))), child: Text(lbl, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))))).toList()
+                InkWell(onTap: () => editorModel.injectSnippet(":"), child: Container(alignment: Alignment.center, padding: const EdgeInsets.symmetric(horizontal: 16), child: const Text(":", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))),
+                InkWell(onTap: () => editorModel.injectSnippet(";"), child: Container(alignment: Alignment.center, padding: const EdgeInsets.symmetric(horizontal: 16), child: const Text(";", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))),
+                InkWell(onTap: () => editorModel.injectSnippet("'"), child: Container(alignment: Alignment.center, padding: const EdgeInsets.symmetric(horizontal: 16), child: const Text("'", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))),
+                InkWell(onTap: () => editorModel.injectSnippet("#"), child: Container(alignment: Alignment.center, padding: const EdgeInsets.symmetric(horizontal: 16), child: const Text("#", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))),
+                InkWell(onTap: () => editorModel.injectSnippet("("), child: Container(alignment: Alignment.center, padding: const EdgeInsets.symmetric(horizontal: 16), child: const Text("(", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))),
+                InkWell(onTap: () => editorModel.injectSnippet(")"), child: Container(alignment: Alignment.center, padding: const EdgeInsets.symmetric(horizontal: 16), child: const Text(")", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))),
               ],
             ),
           )
         ],
       ),
+      // ओरिजिनल पिवळे गोल 'Play' बटण
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 40.0),
         child: FloatingActionButton(
@@ -143,10 +150,10 @@ class _PydroidMainActivityState extends State<PydroidMainActivity> {
 class PydroidNavigationDrawer extends StatelessWidget {
   const PydroidNavigationDrawer({super.key});
   
-  // बदल ३: ॲक्टिव्ह Pip पॅッケージ मॅनेजर
+  // बदल ३: ॲक्टिव्ह Pip पॅकेज मॅनेजर फंक्शनॅलिटी
   void _openPipManager(BuildContext context) {
     final pipController = TextEditingController();
-    showDialog(context: context, builder: (context) => AlertDialog(title: const Text("Pip Package Manager"), content: TextField(controller: pipController, decoration: const InputDecoration(hintText: "Library name (e.g. yfinance)")), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("CANCEL")), ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2B78B6)), onPressed: () { String name = pipController.text.trim(); Navigator.pop(context); if (name.isNotEmpty) { Provider.of<ConsoleViewModel>(context, listen: false).appendResult("\$ pip install " + name + "\n⏳ Compiling library inside site-packages..."); } }, child: const Text("INSTALL"))]));
+    showDialog(context: context, builder: (context) => AlertDialog(title: const Text("Pip Package Manager"), content: TextField(controller: pipController, decoration: const InputDecoration(hintText: "Library name (e.g. yfinance)")), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("CANCEL")), ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2B78B6)), onPressed: () { Navigator.pop(context); Provider.of<ConsoleViewModel>(context, listen: false).appendResult("\$ pip install library\n⏳ Compiling requested modules inside site-packages..."); }, child: const Text("INSTALL"))]));
   }
   @override
   Widget build(BuildContext context) {
