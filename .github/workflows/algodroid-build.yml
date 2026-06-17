@@ -17,9 +17,6 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Setup Gradle Build Environment
-        uses: gradle/actions/setup-gradle@v3
-
       - name: Inject Clean Native Files Map Architecture
         run: |
           rm -rf * .github
@@ -36,15 +33,15 @@ jobs:
           with open('build.gradle.kts', 'w') as f:
               f.write('plugins {\n    id(\"com.android.application\") version \"8.2.0\" apply false\n    id(\"org.jetbrains.kotlin.android\") version \"1.9.20\" apply false\n    id(\"com.chaquo.python\") version \"15.0.1\" apply false\n}\ntasks.register<Delete>(\"clean\") { delete(rootProject.buildDir) }\n')
 
-          # ३. Settings Gradle Repository Hook (Chaquopy अधिकृत सर्व्हर लिंक)
+          # ३. Settings Gradle Repository Hook
           with open('settings.gradle.kts', 'w') as f:
               f.write('pluginManagement {\n    repositories {\n        google()\n        mavenCentral()\n        gradlePluginPortal()\n        maven { url = java.net.URI(\"https://chaquo.com/maven\") }\n    }\n}\ndependencyResolutionManagement {\n    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)\n    repositories {\n        google()\n        mavenCentral()\n        maven { url = java.net.URI(\"https://chaquo.com/maven\") }\n    }\n}\nrootProject.name = \"AlgoDroidPro\"\ninclude(\":app\")\n')
 
-          # ४. App Gradle (CPython 3.12 इंजिन + सर्व २२ नियमांच्या जड ट्रेडिंग लायब्ररीज)
+          # ४. App Gradle (CPython 3.12 इंजिन + लायब्ररीज)
           with open('app/build.gradle.kts', 'w') as f:
               f.write('plugins {\n    id(\"com.android.application\")\n    id(\"org.jetbrains.kotlin.android\")\n    id(\"com.chaquo.python\")\n}\nandroid {\n    namespace = \"com.algodroid.pro\"\n    compileSdk = 34\n    defaultConfig {\n        applicationId = \"com.algodroid.pro\"\n        minSdk = 26\n        targetSdk = 34\n        versionCode = 1\n        versionName = \"1.0.0\"\n        ndk { abiFilters.addAll(setOf(\"armeabi-v7a\", \"arm64-v8a\", \"x86\", \"x86_64\")) }\n        python {\n            version = \"3.12\"\n            pip {\n                install(\"pandas\")\n                install(\"numpy\")\n                install(\"ccxt\")\n                install(\"yfinance\")\n                install(\"numba\")\n            }\n        }\n    }\n    buildFeatures { viewBinding = true }\n}\ndependencies {\n    implementation(\"androidx.core:core-ktx:1.12.0\")\n    implementation(\"androidx.appcompat:appcompat:1.6.1\")\n    implementation(\"com.google.android.material:material:1.11.0\")\n    implementation(\"androidx.constraintlayout:constraintlayout:2.1.4\")\n}\n')
 
-          # ५. Core Android Manifest (WakeLock + २४/७ बॅकग्राउंड इंजिन परवानग्या एंट्री)
+          # ५. Core Android Manifest (Permissions Entry)
           with open('app/src/main/AndroidManifest.xml', 'w') as f:
               f.write('<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\" package=\"com.algodroid.pro\">\n    <uses-permission android:name=\"android.permission.INTERNET\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\" />\n    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE_SPECIAL_USE\" />\n    <application android:allowBackup=\"true\" android:label=\"AlgoDroid Pro\" android:supportsRtl=\"true\" android:theme=\"@style/Theme.AppCompat.NoActionBar\">\n        <activity android:name=\".MainActivity\" android:exported=\"true\">\n            <intent-filter>\n                <action android:name=\"android.intent.action.MAIN\" />\n                <category android:name=\"android.intent.category.LAUNCHER\" />\n            </intent-filter>\n        </activity>\n        <service android:name=\".AlgoDaemonService\" android:enabled=\"true\" android:exported=\"false\" android:foregroundServiceType=\"specialUse\" />\n    </application>\n</manifest>\n')
 
@@ -60,15 +57,14 @@ jobs:
           with open('app/src/main/java/com/algodroid/pro/MainActivity.kt', 'w') as f:
               f.write('package com.algodroid.pro\nimport android.content.*\nimport android.os.Bundle\nimport android.view.View\nimport android.widget.*\nimport androidx.appcompat.app.AppCompatActivity\nimport com.algodroid.pro.databinding.ActivityMainBinding\nclass MainActivity : AppCompatActivity() {\n    private lateinit var binding: ActivityMainBinding\n    private var isTerminal = false\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        binding = ActivityMainBinding.inflate(layoutInflater)\n        setContentView(binding.root)\n        setupBar()\n        binding.fabPlay.setOnClickListener {\n            if (!isTerminal) {\n                binding.codeEditor.visibility = View.GONE\n                binding.terminalView.visibility = View.VISIBLE\n                binding.txtTerminalLog.text = \"Terminal Loaded. Ready.\\n🟢 Code Sanitizer: Success.\\n>> Running Algorithmic Strategy...\"\n                isTerminal = true\n            } else {\n                binding.codeEditor.visibility = View.VISIBLE\n                binding.terminalView.visibility = View.GONE\n                isTerminal = false\n            }\n        }\n        startService(Intent(this, AlgoDaemonService::class.java))\n    } \n    private fun setupBar() {\n        val symbols = arrayOf(\"Tab\", \":\", \";\", \"'\", \"#\", \"(\", \")\", \"[\", \"]\")\n        for (sym in symbols) {\n            val b = Button(this).apply { text = sym; setTextColor(android.graphics.Color.WHITE) }\n            b.setOnClickListener { binding.codeEditor.text.insert(binding.codeEditor.selectionStart, if(sym==\"Tab\") \"    \" else sym) }\n            binding.shortcutBarLayout.addView(b)\n        }\n    }\n}\n')
 
-          # ९. CPython Core Integration File (टायपिंग एरर फिक्स केला आहे - print वापरले)
+          # ९. CPython Core Integration File (टायपिंग एरर पूर्णपणे फिक्स केला आहे!)
           with open('app/src/main/python/app_backend.py', 'w') as f:
               f.write('import time\ndef start_daemon_loop():\n    print(\"⚡ [Python Engine] Independent Daemon Active 24/7.\")\n    while True:\n        print(\"Heartbeat active\")\n        time.sleep(60)\n')
           "
 
-      # डायरेक्ट नेटिव्ह कॉम्पिलेशन
+      # डायरेक्ट आणि क्लीन नेटिव्ह कॉम्पिलेशन (जुना कॅश स्किप करून)
       - name: Force Compile High-Performance Production Android APK
         run: |
-          gradle wrapper --gradle-version 8.2
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
 
