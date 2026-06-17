@@ -17,13 +17,13 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      # १. जुना सर्व कचरा फोल्डर्स पूर्ण साफ करून क्लीन स्लॉट मिळवणे
-      - name: Clear Legacy Cache and Old Path Structure
+      # १. वर्कस्पेस मधील सर्व जुना बॅकएंड कचरा पूर्णपणे साफ करणे
+      - name: Force Clean Environment Workspace
         run: |
           rm -rf * .github
           
-      # २. मूळ अँड्रॉइड शुद्ध डीरेक्टरी स्ट्रक्चर अगदी सुरुवातीपासून तयार करणे
-      - name: Re-Establish Android Directories Architecture
+      # २. मूळ शुद्ध डीरेक्टरी रचना तयार करणे
+      - name: Establish Native Directories
         run: |
           mkdir -p app/src/main/java/com/algodroid/pro
           mkdir -p app/src/main/res/layout
@@ -31,7 +31,7 @@ jobs:
           mkdir -p app/src/main/python
 
       # ३. प्रोजेक्ट लेव्हल कडक ग्रॅडल रचना
-      - name: Inject Project Gradle Setup
+      - name: Setup Root Project Gradle Configuration
         run: |
           cat << 'EOF' > build.gradle.kts
           plugins {
@@ -42,8 +42,8 @@ jobs:
           tasks.register<Delete>("clean") { delete(rootProject.buildDir) }
           EOF
 
-      # ४. नियम १७: मुख्य डॅशबोर्ड राउटींग पाथ आणि Chaquopy केंद्रीय सर्व्हर हुक
-      - name: Inject Settings Gradle Configuration
+      # ४. नियम १७: डॅशबोर्ड राउटींग पाथ आणि Chaquopy केंद्रीय सर्व्हर लिंक जोडली
+      - name: Setup Settings Gradle System Configuration
         run: |
           cat << 'EOF' > settings.gradle.kts
           pluginManagement {
@@ -66,8 +66,8 @@ jobs:
           include(":app")
           EOF
 
-      # ५. नियम ३ व १८: पायथन CPython ३.१२ इंजिन + सर्व २२ नियमांच्या जड ट्रेडिंग लायब्ररीज (ccxt, pandas, numba, yfinance)
-      - name: Inject App Gradle Main Configurations
+      # ५. नियम ३ व १८: पायथन CPython ३.१२ कोर + ट्रेडिंग लायब्ररीज (ccxt, pandas, numba, yfinance)
+      - name: Setup App Level Gradle Module Configuration
         run: |
           cat << 'EOF' > app/build.gradle.kts
           plugins {
@@ -106,8 +106,8 @@ jobs:
           }
           EOF
 
-      # ६. नियम ८ व २०: २४/७ अखंड चालणारी स्वतंत्र डॅमन वेकलॉक सर्व्हिस आणि परवानग्या
-      - name: Inject Core Android Manifest
+      # ६. नियम ८ व २०: २४/७ अखंड डॅमन सर्व्हिस आणि परवानग्या हुक्स
+      - name: Setup Native Core Android Manifest Permissions
         run: |
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <?xml version="1.0" encoding="utf-8"?>
@@ -128,8 +128,8 @@ jobs:
           </manifest>
           EOF
 
-      # ७. नियम १, ७ व २2: Pydroid 3 मॅचिंग ओरिजिनल इंटरफेस लेआउट View
-      - name: Inject Pydroid Core Layout Screen Layout
+      # ७. नियम १, ७ व २२: Pydroid 3 Replica UI (activity_main.xml - निळी पट्टी, शॉर्टकट बार, पिवळे बटन)
+      - name: Setup Original Pydroid Core Layout Screen Layout
         run: |
           cat << 'EOF' > app/src/main/res/layout/activity_main.xml
           <?xml version="1.0" encoding="utf-8"?>
@@ -141,8 +141,8 @@ jobs:
           </LinearLayout>
           EOF
 
-      # ८. नियम ८ व २०: २४/७ इंडिपेंडंट डॅमन बॅकग्राउंड सर्व्हिस कोटलिन कोड
-      - name: Inject Persistent Background Daemon Service Layer
+      # ८. नियम ८ व २०: २४/७ इंडिपेंडंट डॅमन बॅकग्राउंड सर्व्हिस कोटलिन कोड (AlgoDaemonService.kt)
+      - name: Setup Core Background Daemon Service Layer
         run: |
           cat << 'EOF' > app/src/main/java/com/algodroid/pro/AlgoDaemonService.kt
           package com.algodroid.pro
@@ -166,8 +166,8 @@ jobs:
           }
           EOF
 
-      # ९. नियम ५, ६, ११ व १२: इनपुट-आउटपुट कन्सोल, क्लिपबोर्ड आणि सॅनिटायझर मॅनेजर
-      - name: Inject Main UI Core Controller Logic
+      # ९. नियम ५, ६, ११ व १२: इनपुट-आउटपुट कन्सोल, क्लिपबोर्ड आणि सॅनिटायझर मॅनेजर (MainActivity.kt)
+      - name: Setup Main UI Core Control Logic Interface
         run: |
           cat << 'EOF' > app/src/main/java/com/algodroid/pro/MainActivity.kt
           package com.algodroid.pro
@@ -210,8 +210,8 @@ jobs:
           }
           EOF
 
-      # १०. नियम २, १३ व १६: CPython ऑपरेशन बॅकएंड कंट्रोलर फाईल
-      - name: Inject CPython Native Engine Loop Controller
+      # १०. नियम २, १३ व १६: CPython ऑपरेशन बॅकएंड कंट्रोलर फाईल (app_backend.py)
+      - name: Setup CPython Native Engine Loop Controller
         run: |
           cat << 'EOF' > app/src/main/python/app_backend.py
           import time
@@ -220,24 +220,15 @@ jobs:
                   time.sleep(60)
           EOF
 
-      # फॉल्टचा कायमचा बंदोबस्त: सिस्टीमवर स्वतंत्रपणे फ्रेश रॅपर जनरेट करणे
-      - name: Establish Independent Gradle Wrapper Engine Environment
-        run: |
-          mkdir -p gradle/wrapper
-          cat << 'EOF' > gradle/wrapper/gradle-wrapper.properties
-          distributionBase=GRADLE_USER_HOME
-          distributionPath=wrapper/dists
-          distributionUrl=https\://services.gradle.org/distributions/gradle-8.2-bin.zip
-          zipStoreBase=GRADLE_USER_HOME
-          zipStorePath=wrapper/dists
-          EOF
-          # मूळ गिटहब रॅपर स्क्रिप्ट स्थापित करणे
-          curl -sL https://raw.githubusercontent.com/gradle/gradle/v8.2.0/gradlew -o gradlew
-          chmod +x gradlew
+      # हिडन लिनक्स कॅरेक्टर एरर पूर्णपणे टाळण्यासाठी स्वयंचलित आणि सुरक्षित ग्रॅडल जनरेटर ॲक्शन
+      - name: Auto-Inject Verified Gradle Wrapper Environment
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: 8.2
 
-      # अंतिम कडक आणि एरर-फ्री कॉम्पिलेशन
+      # अंतिम कडक आणि विना-एरर कॉम्पिलेशन
       - name: Force Compile High-Performance Native Android Production APK
-        run: ./gradlew assembleDebug --no-daemon
+        run: gradle assembleDebug --no-daemon
 
       - name: Upload Clean Master AlgoDroid Pro APK Package
         uses: actions/upload-artifact@v4
