@@ -23,15 +23,26 @@ jobs:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: Recreate Android Project Core Structure
+      - name: Preserve True AlgoDroid Source Files
+        # आपल्या खऱ्या फाईल्स तात्पुरत्या सुरक्षित फोल्डरमध्ये हलवून ठेवणे
+        run: |
+          mkdir -p temp_core
+          cp main.dart temp_core/main.dart || true
+          cp pubspec.yaml temp_core/pubspec.yaml || true
+          cp AndroidManifest.xml temp_core/AndroidManifest.xml || true
+
+      - name: Recreate Android Project Structure
         run: flutter create . --org com.algodroid.pro --project-name algodroid_pro --overwrite
 
-      - name: Restore True AlgoDroid Core UI
-        # ही मॅजिकल कमांड काउंटर ॲप हटवून आपला खरा main.dart रिस्टोर करेल
+      - name: Force Overwrite Counter App With True AlgoDroid Core
+        # डेमो काउंटर ॲप पूर्णपणे डिलीट करून आपला खरा अल्गो डॅशबोर्ड सक्तीने ओव्हरराईट करणे
         run: |
-          git checkout main.dart
-          git checkout pubspec.yaml
-          git checkout AndroidManifest.xml
+          rm -f lib/main.dart
+          cp temp_core/main.dart lib/main.dart
+          cp temp_core/pubspec.yaml pubspec.yaml
+          rm -f android/app/src/main/AndroidManifest.xml
+          mkdir -p android/app/src/main
+          cp temp_core/AndroidManifest.xml android/app/src/main/AndroidManifest.xml
 
       - name: Get dependencies
         run: flutter pub get
