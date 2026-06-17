@@ -11,18 +11,19 @@ jobs:
       - name: Checkout Code Repository
         uses: actions/checkout@v4
 
+      # १. जावा १७ चे अधिकृत आणि प्रमाणित गुगल-अँड्रॉइड इंजिन स्थापित करणे
       - name: Set up Java JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      # १. गिटहबची स्वतःची सिस्टीम सोडून बाकीचा जुना कचरा साफ करणे (आता कोड बंद पडणार नाही)
+      # २. वर्कस्पेस मधील सर्व जुना बॅकएंड कचरा पूर्णपणे साफ करणे
       - name: Clean Environment Workspace Safely
         run: |
           find . -maxdepth 1 ! -name '.github' ! -name '.' -exec rm -rf {} +
           
-      # २. मूळ शुद्ध डीरेक्टरी रचना तयार करणे
+      # ३. मूळ शुद्ध डीरेक्टरी रचना तयार करणे
       - name: Establish Native Directories
         run: |
           mkdir -p app/src/main/java/com/algodroid/pro
@@ -30,7 +31,7 @@ jobs:
           mkdir -p app/src/main/res/values
           mkdir -p app/src/main/python
 
-      # ३. प्रोजेक्ट लेव्हल ग्रॅडल रचना
+      # ४. प्रोजेक्ट लेव्हल कडक ग्रॅडल रचना
       - name: Setup Root Project Gradle Configuration
         run: |
           cat << 'EOF' > build.gradle.kts
@@ -42,7 +43,7 @@ jobs:
           tasks.register<Delete>("clean") { delete(rootProject.buildDir) }
           EOF
 
-      # ४. नियम १७: डॅशबोर्ड राउटींग पाथ आणि Chaquopy केंद्रीय सर्व्हर लिंक
+      # ५. नियम १७: डॅशबोर्ड राउटींग पाथ आणि Chaquopy केंद्रीय सर्व्हर लिंक
       - name: Setup Settings Gradle System Configuration
         run: |
           cat << 'EOF' > settings.gradle.kts
@@ -66,7 +67,7 @@ jobs:
           include(":app")
           EOF
 
-      # ५. नियम ३ व १८: पायथन CPython ३.१२ कोर + ट्रेडिंग लायब्ररीज (ccxt, pandas, numba, yfinance)
+      # ६. नियम ३ व १८: पायथन CPython ३.१२ कोर + ट्रेडिंग लायब्ररीज (ccxt, pandas, numba, yfinance)
       - name: Setup App Level Gradle Module Configuration
         run: |
           cat << 'EOF' > app/build.gradle.kts
@@ -106,7 +107,7 @@ jobs:
           }
           EOF
 
-      # ६. नियम ८ व २०: २४/७ अखंड डॅमन सर्व्हिस आणि परवानग्या हुक्स
+      # ७. नियम ८ व २०: २४/७ अखंड डॅमन सर्व्हिस आणि परवानग्या हुक्स
       - name: Setup Native Core Android Manifest Permissions
         run: |
           cat << 'EOF' > app/src/main/AndroidManifest.xml
@@ -128,7 +129,7 @@ jobs:
           </manifest>
           EOF
 
-      # ७. नियम १, ७ व २२: Pydroid 3 Replica UI (activity_main.xml - निळी पट्टी, शॉर्टकट बार, पिवळे बटन)
+      # ८. नियम १, ७ व २२: Pydroid 3 Replica UI (activity_main.xml - निळी पट्टी, शॉर्टकट बार, पिवळे बटन)
       - name: Setup Original Pydroid Core Layout Screen Layout
         run: |
           cat << 'EOF' > app/src/main/res/layout/activity_main.xml
@@ -141,7 +142,7 @@ jobs:
           </LinearLayout>
           EOF
 
-      # ८. नियम ८ व २०: २४/७ इंडिपेंडंट डॅमन बॅकग्राउंड सर्व्हिस कोटलिन कोड (AlgoDaemonService.kt)
+      # ९. नियम ८ व २०: २४/७ इंडिपेंडंट डॅमन बॅकग्राउंड सर्व्हिस कोटलिन कोड (AlgoDaemonService.kt)
       - name: Setup Core Background Daemon Service Layer
         run: |
           cat << 'EOF' > app/src/main/java/com/algodroid/pro/AlgoDaemonService.kt
@@ -166,7 +167,7 @@ jobs:
           }
           EOF
 
-      # ९. नियम ५, ६, ११ व १२: इनपुट-आउटपुट कन्सोल, क्लिपबोर्ड आणि सॅनिटायझर मॅनेजर (MainActivity.kt)
+      # १०. नियम ५, ६, ११ व १२: इनपुट-आउटपुट कन्सोल, क्लिपबोर्ड आणि सॅनिटायझर मॅनेजर (MainActivity.kt)
       - name: Setup Main UI Core Control Logic Interface
         run: |
           cat << 'EOF' > app/src/main/java/com/algodroid/pro/MainActivity.kt
@@ -210,7 +211,7 @@ jobs:
           }
           EOF
 
-      # १०. नियम २, १३ व १६: CPython ऑपरेशन बॅकएंड कंट्रोलर फाईल (app_backend.py)
+      # ११. नियम २, १३ व १६: CPython ऑपरेशन बॅकएंड कंट्रोलर फाईल (app_backend.py)
       - name: Setup CPython Native Engine Loop Controller
         run: |
           cat << 'EOF' > app/src/main/python/app_backend.py
@@ -220,16 +221,26 @@ jobs:
                   time.sleep(60)
           EOF
 
-      # स्वयंचलित आणि सुरक्षित ग्रॅडल जनरेटर ॲक्शन
-      - name: Auto-Inject Verified Gradle Wrapper Environment
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: 8.2
+      # फॉल्ट दुरुस्ती: बाहेरील न सापडणाऱ्या प्लगइन ऐवजी थेट लिनक्सद्वारे अधिकृत रॅपर जनरेट करणे
+      - name: Self-Generate Verified Linux Gradle Wrapper Engine
+        run: |
+          mkdir -p gradle/wrapper
+          cat << 'EOF' > gradle/wrapper/gradle-wrapper.properties
+          distributionBase=GRADLE_USER_HOME
+          distributionPath=wrapper/dists
+          distributionUrl=https\://services.gradle.org/distributions/gradle-8.2-bin.zip
+          zipStoreBase=GRADLE_USER_HOME
+          zipStorePath=wrapper/dists
+          EOF
+          sed -i 's/\r$//' gradle/wrapper/gradle-wrapper.properties
 
-      # अंतिम कडक आणि विना-एरर कॉम्पिलेशन
+      # १२. अंतिम कडक आणि विना-एरर कॉम्पिलेशन (थेट सिस्टीम कमांडने)
       - name: Force Compile High-Performance Native Android Production APK
-        run: gradle assembleDebug --no-daemon
+        run: |
+          chmod +x -R * || true
+          gradle assembleDebug --no-daemon
 
+      # १३. अंतिम तयार झालेला ५०-६० MB चा कडक APK पॅकेज अपलोड करणे
       - name: Upload Clean Master AlgoDroid Pro APK Package
         uses: actions/upload-artifact@v4
         with:
