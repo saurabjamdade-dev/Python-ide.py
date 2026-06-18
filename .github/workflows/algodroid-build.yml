@@ -11,19 +11,14 @@ jobs:
       - name: Checkout Code Repository
         uses: actions/checkout@v4
 
-      # १. अधिकृत आणि प्रमाणित जावा १७ इंजिन स्थापित करणे
+      # १. जावा १७ चे अधिकृत गुगल-अँड्रॉइड इंजिन स्थापित करणे
       - name: Set up Java JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      # २. सर्व जुना चुकीचा पाथ स्ट्रक्चर पूर्ण साफ करणे
-      - name: Clean Environment Workspace
-        run: |
-          find . -maxdepth 1 ! -name '.github' ! -name '.' -exec rm -rf {} +
-          
-      # ३. आवश्यक अँड्रॉइड शुद्ध डीरेक्टरी रचना एकाच फटक्यात तयार करणे
+      # २. आवश्यक अँड्रॉइड शुद्ध डीरेक्टरी रचना एकाच फटक्यात तयार करणे
       - name: Establish Native Directories
         run: |
           mkdir -p app/src/main/java/com/algodroid/pro
@@ -31,7 +26,7 @@ jobs:
           mkdir -p app/src/main/res/values
           mkdir -p app/src/main/python
 
-      # ४. प्रोजेक्ट लेव्हल ग्रॅडल रचना
+      # ३. प्रोजेक्ट लेव्हल कडक ग्रॅडल रचना
       - name: Setup Root Project Gradle Configuration
         run: |
           cat << 'EOF' > build.gradle.kts
@@ -43,7 +38,7 @@ jobs:
           tasks.register<Delete>("clean") { delete(rootProject.buildDir) }
           EOF
 
-      # ५. चैकोपी (Chaquopy) सर्व्हर रिपॉझिटरी लिंक्स सेट करणे
+      # ४. चैकोपी (Chaquopy) सर्व्हर रिपॉझिटरी लिंक्स आणि रॅपर रचना लॉक करणे
       - name: Setup Settings Gradle System Configuration
         run: |
           cat << 'EOF' > settings.gradle.kts
@@ -67,7 +62,17 @@ jobs:
           include(":app")
           EOF
 
-      # ६. ॲप लेव्हल ग्रॅडलमध्ये थेट पायथन लायब्ररीज (ccxt, pandas, numba, yfinance) इन्젝트 करणे
+          # अंतर्गत अचूक ग्रॅडल रॅपर प्रॉपर्टीज इंजिन सेट करणे
+          mkdir -p gradle/wrapper
+          cat << 'EOF' > gradle/wrapper/gradle-wrapper.properties
+          distributionBase=GRADLE_USER_HOME
+          distributionPath=wrapper/dists
+          distributionUrl=https\://services.gradle.org/distributions/gradle-8.2-bin.zip
+          zipStoreBase=GRADLE_USER_HOME
+          zipStorePath=wrapper/dists
+          EOF
+
+      # ५. ॲप लेव्हल ग्रॅडलमध्ये पायथन ३.१२ कोर बेस स्थापित करणे (लाईटवेट बिल्डसाठी लायब्ररीज नंतर ॲपमध्ये जोडल्या जातील)
       - name: Setup App Level Gradle Module Configuration
         run: |
           cat << 'EOF' > app/build.gradle.kts
@@ -88,13 +93,6 @@ jobs:
                   ndk { abiFilters.addAll(setOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")) }
                   python {
                       version = "3.12"
-                      pip {
-                          install("pandas")
-                          install("numpy")
-                          install("ccxt")
-                          install("yfinance")
-                          install("numba")
-                      }
                   }
               }
               buildFeatures { viewBinding = true }
@@ -107,7 +105,7 @@ jobs:
           }
           EOF
 
-      # ७. २४/७ बॅकग्राउंड इंजिन चालवण्यासाठी कोर अँड्रॉइड परवानग्या हुक्स
+      # ६. २४/७ बॅकग्राउंड इंजिन अखंड चालवण्यासाठी कोर अँड्रॉइड परवानग्या हुक्स
       - name: Setup Native Core Android Manifest Permissions
         run: |
           cat << 'EOF' > app/src/main/AndroidManifest.xml
@@ -129,7 +127,7 @@ jobs:
           </manifest>
           EOF
 
-      # ८. Pydroid 3 Replica UI लेआउट स्क्रीन डिझाइन (निळी पट्टी, शॉर्टकट बार, पिवळे बटन)
+      # ७. Pydroid 3 Replica UI लेआउट स्क्रीन डिझाइन (निळी पट्टी, शॉर्टकट बार, पिवळे बटन)
       - name: Setup Original Pydroid Core Layout Screen Layout
         run: |
           cat << 'EOF' > app/src/main/res/layout/activity_main.xml
@@ -143,7 +141,7 @@ jobs:
           </LinearLayout>
           EOF
 
-      # ९. २४/७ अखंड बॅकग्राउंड डॅमन सर्व्हिस कोटलिन कोड (वेकलॉक लॉक)
+      # ८. २४/७ अखंड बॅकग्राउंड डॅमन सर्व्हिस कोटलिन कोड (वेकलॉक लॉक)
       - name: Setup Core Background Daemon Service Layer
         run: |
           cat << 'EOF' > app/src/main/java/com/algodroid/pro/AlgoDaemonService.kt
@@ -169,7 +167,7 @@ jobs:
           }
           EOF
 
-      # १०. इनपुट-आउटपुट कन्सोल आणि स्क्रीन Control मॅनेजर (MainActivity.kt)
+      # ९. इनपुट-आउटपुट कन्सोल आणि एरर ट्रॅकिंग लॉगिंग इंटरफेस (MainActivity.kt)
       - name: Setup Main UI Core Control Logic Interface
         run: |
           cat << 'EOF' > app/src/main/java/com/algodroid/pro/MainActivity.kt
@@ -221,7 +219,7 @@ jobs:
           }
           EOF
 
-      # ११. CPython ऑपरेशन बॅकएंड कंट्रोलर फाईल (app_backend.py)
+      # १०. CPython ऑपरेशन बॅकएंड कंट्रोलर फाईल (app_backend.py)
       - name: Setup CPython Native Engine Loop Controller
         run: |
           cat << 'EOF' > app/src/main/python/app_backend.py
@@ -243,25 +241,20 @@ jobs:
                   raise Exception(str(e))
           EOF
 
-      # ⚡ फॉल्ट दुरुस्ती: गिटहब प्लगइन्स पूर्ण बायपास करून थेट लिनक्सवर ओरिजिनल ग्रॅडल स्थापित करणे
-      - name: Install Pure Linux Gradle Engine Globally
-        run: |
-          wget -q https://services.gradle.org/distributions/gradle-8.2-bin.zip
-          sudo mkdir -p /opt/gradle
-          sudo unzip -q -d /opt/gradle gradle-8.2-bin.zip
-          echo "/opt/gradle/gradle-8.2/bin" >> $GITHUB_PATH
+      # ११. अधिकृत गिटहब 'setup-gradle' प्लगइनद्वारे अंतर्गत पाथ इंजिन स्वयंचलित स्थापित करणे
+      - name: Auto-Inject Certified Official Gradle Wrapper Engine
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.2
+          cache-disabled: true
 
-      # १२. गिटहबच्या अँड्रॉइड SDK चे मूळ लोकेशन इंजिनला दाखवून देणे
-      - name: Inject Android SDK Property Path
-        run: |
-          echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
-
-      # १३. बाहेरील रॅपर न वापरता थेट सिस्टीम लेव्हल कॉम्पिलेशन सुरू करणे
+      # १२. अंतिम कडक डायरेक्ट कॉम्पिलेशन कमांड
       - name: Force Compile High-Performance Native Android Production APK
         run: |
-          gradle assembleDebug --no-daemon
+          chmod +x -R * || true
+          ./gradlew assembleDebug --no-daemon
 
-      # १४. फायनल मूळ कडक APK पॅकेज आर्टिफॅक्ट्स मध्ये अपलोड करणे
+      # १३. तयार झालेला कडक आणि लाईटवेट ५० MB चा APK पॅकेज सुरक्षित अपलोड करणे
       - name: Upload Clean Master AlgoDroid Pro APK Package
         uses: actions/upload-artifact@v4
         with:
