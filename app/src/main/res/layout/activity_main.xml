@@ -1,0 +1,49 @@
+package com.algo.droid
+
+import android.annotation.SuppressLint
+import android.os.Bundle
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.widget.Button
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var editorWebView: WebView
+    private lateinit var consoleOutput: TextView
+    private lateinit var btnRun: Button
+
+    @SuppressLint("SetJavaScriptEnabled")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        editorWebView = findViewById(R.id.editorWebView)
+        consoleOutput = findViewById(R.id.consoleOutput)
+        btnRun = findViewById(R.id.btnRun)
+
+        // Monaco Editor लोड करणे (नियम 7)
+        editorWebView.settings.javaScriptEnabled = true
+        editorWebView.settings.domStorageEnabled = true
+        editorWebView.webChromeClient = WebChromeClient()
+        editorWebView.loadUrl("file:///android_asset/editor.html")
+
+        // Run Button दाबल्यवर काय होईल?
+        btnRun.setOnClickListener {
+            consoleOutput.append("\n> Running Script...")
+            
+            // WebView कडून पायथन कोड मागवणे
+            editorWebView.evaluateJavascript("getPythonCode();") { code ->
+                // येथे तुझा कोड 'AlgoDaemonService' कडे पाठवला जाईल
+                val cleanCode = code.replace("\"", "").replace("\\n", "\n")
+                executePythonCode(cleanCode)
+            }
+        }
+    }
+
+    private fun executePythonCode(pythonCode: String) {
+        // (ही सिस्टीम आपण Chaquopy जोडल्यावर लगेच ऍक्टिव्हेट करू)
+        consoleOutput.append("\nCode sent to backend execution engine (24/7 Daemon).")
+    }
+}

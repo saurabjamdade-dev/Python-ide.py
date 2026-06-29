@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Algo Droid Monaco Editor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs/loader.min.js"></script>
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background-color: #1e1e1e; }
+        #container { width: 100%; height: 100%; }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs' }});
+        require(['vs/editor/editor.main'], function() {
+            window.editor = monaco.editor.create(document.getElementById('container'), {
+                value: '# Algo Droid\n# Trading Strategy (SMC & Wyckoff)\n\nimport ccxt\nimport pandas as pd\n\nprint("Engine Ready!")',
+                language: 'python',
+                theme: 'vs-dark',
+                automaticLayout: true,
+                fontSize: 14,
+                minimap: { enabled: false }, // मोबाईल स्क्रीनवर जागा वाचवण्यासाठी
+                wordWrap: 'on'
+            });
+        });
+
+        // Android ला कोड पाठवण्यासाठी फंक्शन
+        function getPythonCode() {
+            return window.editor.getValue();
+        }
+    </script>
+</body>
+</html>
